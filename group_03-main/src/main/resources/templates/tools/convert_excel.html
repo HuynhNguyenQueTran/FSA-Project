@@ -1,0 +1,95 @@
+
+<style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .drop-zone {
+            border: 2px dashed #007bff;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            background-color: #E5EEFA;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .drop-zone:hover {
+            background-color: #D2E2F6;
+        }
+
+    </style>
+
+<div class="d-flex flex-column min-vh-100">
+
+    <!-- Main Content -->
+    <div class="container mt-5 flex-grow-1">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active text-primary" href="/tools">Excel to JSON</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/tools/convert_txt">TXT to JSON</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/tools/generate_exam">Generate Exam</a>
+            </li>
+        </ul>
+
+        <!-- Content Section -->
+        <a th:href="@{/quizes}" class="btn btn-outline-primary btn-sm position-absolute mt-3">
+            <i class="bi bi-arrow-left-short"></i> Back
+        </a>
+        <div class="mt-5 text-center">
+            <h1 class="">Convert Excel to JSON</h1>
+            <p class="text-muted">Upload an Excel file and convert it to JSON format.</p>
+
+            <!-- Form for Uploading Excel File -->
+            <form method="POST" enctype="multipart/form-data" th:action="@{/tools/upload_excel}">
+                <div class="drop-zone my-5" id="dropZone">
+                    <p class="text-muted mb-2"><i class="bi bi-upload" style="font-size: 2rem;"></i></p>
+                    <label for="fileUpload" class="btn btn-primary"> <i class="bi bi-folder"></i> Browse Files</label>
+                    <input type="file" name="excelFile" class="form-control d-none" id="fileUpload" required multiple>
+                </div>
+                <ul id="fileList" class="list-group"></ul>
+
+                <!-- Button Group -->
+                <div class="d-flex gap-2 justify-content-center mt-3">
+                    <button type="submit" class="btn btn-primary">Convert to JSON</button>
+                    <a href="/quizes/download-template" class="btn btn-primary">
+                        <i class="bi bi-download"></i> Download Template
+                    </a>
+                </div>
+            </form>
+            <div id="responseMessage" class="text-center mt-3"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+        document.getElementById('fileUpload').addEventListener('change', function(event) {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = ''; // Xóa danh sách cũ
+
+            Array.from(event.target.files).forEach((file, index) => {
+                const listItem = document.createElement('li');
+                listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+                listItem.textContent = file.name;
+
+                const removeButton = document.createElement('button');
+                removeButton.classList.add('btn', 'btn-sm', 'btn-danger');
+                removeButton.textContent = 'X';
+                removeButton.addEventListener('click', function() {
+                    const dataTransfer = new DataTransfer();
+                    Array.from(document.getElementById('fileUpload').files)
+                        .filter((_, i) => i !== index)
+                        .forEach(f => dataTransfer.items.add(f));
+                    document.getElementById('fileUpload').files = dataTransfer.files;
+                    listItem.remove();
+                });
+
+                listItem.appendChild(removeButton);
+                fileList.appendChild(listItem);
+            });
+        });
+    </script>

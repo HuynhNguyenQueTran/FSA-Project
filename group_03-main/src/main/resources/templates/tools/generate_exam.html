@@ -1,0 +1,136 @@
+<style>
+  .footer{
+  position: fixed;
+  }
+
+
+    .tab-button {
+      border-radius: 0 !important;
+    }
+    .drop-zone {
+      border: 2px dashed #dee2e6;
+      padding: 50px;
+      background-color: #f8f9fa;
+      text-align: center;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+
+    .form-control {
+  border-radius: 8px;
+  border: 1px solid #C0C0C0;
+  background-color: #f1f1f1;
+  padding: 10px;
+        width: 88%;
+  }
+    label {
+  font-weight: bold;
+  color: #333;
+  }
+
+  .rounded-input {
+  border-radius: 8px;
+  border: 1px solid #C0C0C0;
+  padding: 10px;
+  background-color: #f1f1f1;
+  width: 90%;
+  box-sizing: border-box; }
+
+    input{
+        padding-left: 10vh;
+    }
+
+</style>
+
+
+<div class="d-flex flex-column">
+
+  <!-- Main Content -->
+  <div class="flex-grow-1 container mt-1">
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link text-dark" href="/tools">Excel to JSON</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-dark" href="/tools/convert_txt">TXT to JSON</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active text-primary" href="tools/generate_exam">Generate Exam</a>
+      </li>
+    </ul>
+
+    <!-- Content Section -->
+    <div class="mt-4">
+      <a th:href="@{/quizes}" class="btn btn-outline-primary btn-sm position-absolute mt-3">
+        <i class="bi bi-arrow-left-short"></i> Back
+      </a>
+      <h1 class="text-center my-4">Generate Exams</h1>
+
+      <form th:action="@{/tools/generate_exams}" method="post" class="row my-4 mx-5">
+        <div class="form-group col-md-6 mb-4">
+          <label for="courseName" class="my-2">Select Course:</label>
+          <select name="courseName" class="form-control  p-2 ms-2" onchange="reloadPage()" required>
+            <option value="" selected>-- Select a Course --</option>
+            <option th:each="course : ${Courses}" th:value="${course.name}" th:text="${course.name}"
+                    th:selected="${course.name == courseName}"></option>
+          </select>
+        </div>
+        <div class="col-md-12 row mb-5">
+          <div class="col-md-6">
+            <label for="quizzes" class=" mb-2">Enter number of quizzes to be created:</label><br>
+            <input type="number" id="quizzes" name="numOfQuizzes" class="p-2 ms-2 rounded-input"
+                   th:value="${numOfQuizzes != null ? numOfQuizzes : ''}" required><br>
+          </div>
+          <div class="col-md-6">
+            <label for="questions" class=" mb-2 ps-1">Enter number of questions for each quiz:</label><br>
+            <input type="number" id="questions" name="questionsEachQuiz" class="p-2 ms-2 rounded-input"
+                   th:value="${questionsEachQuiz != null ? questionsEachQuiz : ''}" required><br>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-center"><button type="submit" class="btn btn-primary" style="width: 150px;"> Generate </button></div>
+
+      </form>
+
+    </div>
+    <div th:if="${Quizzes != null and not #lists.isEmpty(Quizzes)}">
+      <h3>You have successfully created <span th:text="${Count}"></span> quiz(s)</h3>
+
+      <!-- Dropdown danh sách quiz -->
+      <select id="quizDropdown" class="quiz-list-container" size="4">
+        <option th:each="quiz : ${Quizzes}" th:value="${quiz.name}" th:text="${quiz.name}"></option>
+      </select>
+
+      <!-- Nút xem chi tiết -->
+      <button id="viewDetailBtn" class="btn btn-primary" onclick="viewQuizDetail()">View Detail</button>
+    </div>
+
+
+    <div th:if="${errorMessage != null}">
+      <p class="alert alert-danger" th:text="${errorMessage}"></p>
+    </div>
+
+  </div>
+
+</div>
+<script>
+  // Example script to handle file uploads
+  let fileCount = 0;
+  document.querySelector('.btn-browse').addEventListener('click', () => {
+    alert('Browse file functionality not implemented!');
+  });
+</script>
+
+<script>
+  function viewQuizDetail() {
+    let dropdown = document.getElementById("quizDropdown");
+    let selectedQuiz = dropdown.value;
+
+    if (selectedQuiz) {
+        window.location.href = `/quizes/detail/review/${selectedQuiz}`;
+    } else {
+        alert("Please select a quiz to view details.");
+    }
+}
+</script>
